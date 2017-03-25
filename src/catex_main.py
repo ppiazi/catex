@@ -82,6 +82,7 @@ class catex_main:
             in_file_ub = 0
             in_file_lb = 0
 
+            # remove BOM from string
             try:
                 in_file_name = row[0].replace(u'\ufeff', '')
             except Exception as e:
@@ -100,9 +101,9 @@ class catex_main:
             ret = t_catex.catex()
             if ret != 0:
                 print("Error to read %s" % (t_key))
-                continue
-
-            t_result = t_catex.get_code().strip()
+                t_result = "File not found : %s" % (t_key)
+            else:
+                t_result = t_catex.get_code().strip()
 
             i = i + 1
             t_dic = {}
@@ -112,7 +113,12 @@ class catex_main:
             self.result_db.append(t_dic)
 
     def save(self, output_file_name = ""):
-        output_file_name = "output.csv"
+        stdout = False
+        stdout_str = ""
+        if output_file_name == "":
+            output_file_name = "output.csv"
+            stdout = True
+
         try:
             output_csv = open(output_file_name, "w")
         except Exception as e:
@@ -124,10 +130,17 @@ class catex_main:
         for t_item in self.result_db:
             t_list = []
             t_list.append(t_item["key"])
-            t_list.append(t_item["code"].strip())
+            t_list.append(t_item["code"])
             writer.writerow(t_list)
 
+            if stdout == True:
+                t_str = "%s\n%s\n\n" % (t_item["key"], t_item["code"])
+                stdout_str = stdout_str + t_str
+
         output_csv.close()
+
+        if stdout == True:
+            print(stdout_str)
 
 
 if __name__ == "__main__":

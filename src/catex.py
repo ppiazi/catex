@@ -33,9 +33,9 @@ def print_usage():
     print("    Version %s" % __version__)
     print("    Options:")
     print("    -f : set target file")
-    print("    -s : set starting line number")
-    print("    -u : set upper width")
-    print("    -l : set lower width")
+    print("    -s : set start line number")
+    print("    -u : set upper bound")
+    print("    -l : set lower bound")
 
 class catex:
     def __init__(self, file_name, line_number_s, line_number_u=0, line_number_l=0):
@@ -46,14 +46,12 @@ class catex:
         self._code = ""
 
     def catex(self):
-        print("%s %d %d %d" % (self.file_name, self.line_number_s, self.line_number_u,self.line_number_l))
-
         try:
             self.file_handle = open(self.file_name, "r", encoding='utf-8')
         except Exception as e:
             print(str(e))
-            self._code = ""
-            return
+            self._code = str(e)
+            return 1
 
         lines = self.file_handle.readlines()
         line_total_num = len(lines)
@@ -77,6 +75,8 @@ class catex:
             # make formatted code string
             temp_code = CODE_FORMATTER % (line_num_str, lines[line_num])
             self._code = self._code +temp_code
+
+        return 0
 
     def get_code(self):
         return self._code
