@@ -125,7 +125,7 @@ class catex_main:
             print(str(e))
             return 1
 
-        writer = csv.writer(output_csv)
+        writer = csv.writer(output_csv, lineterminator='\n')
 
         for t_item in self.result_db:
             t_list = []
