@@ -20,7 +20,7 @@ import os
 import getopt
 
 __author__ = 'ppiazi'
-__version__ = 'v0.0.1'
+__version__ = 'v0.0.2'
 
 CODE_FORMATTER = "%s : %s"
 
@@ -38,20 +38,26 @@ def print_usage():
     print("    -l : set lower bound")
 
 class catex:
-    def __init__(self, file_name, line_number_s, line_number_u=0, line_number_l=0):
+    def __init__(self, file_name):
         self.file_name = file_name
-        self.line_number_s = line_number_s
-        self.line_number_u = line_number_u
-        self.line_number_l = line_number_l
         self._code = ""
 
-    def catex(self):
         try:
             self.file_handle = open(self.file_name, "r", encoding='utf-8')
         except Exception as e:
+            self.file_handle = None
             print(str(e))
             self._code = str(e)
             return 1
+
+    def catex(self, line_number_s, line_number_u=0, line_number_l=0):
+        if self.file_handle == None:
+            print("File handle closed.")
+            return None
+
+        self.line_number_s = line_number_s
+        self.line_number_u = line_number_u
+        self.line_number_l = line_number_l
 
         lines = self.file_handle.readlines()
         line_total_num = len(lines)
@@ -76,7 +82,13 @@ class catex:
             temp_code = CODE_FORMATTER % (line_num_str, lines[line_num])
             self._code = self._code +temp_code
 
-        return 0
+        return self._code
+
+    def close(self):
+        if self.file_handle == None:
+            return -1
+
+        self.file_handle.close()
 
     def get_code(self):
         return self._code
@@ -118,6 +130,7 @@ if __name__ == "__main__":
         print_usage()
         os._exit(1)
 
-    t_catex = catex(file_name, line_number_s, line_number_u, line_number_l)
-    t_catex.catex()
-    print(t_catex.get_code())
+    t_catex = catex(file_name)
+    code = t_catex.catex(line_number_s, line_number_u, line_number_l)
+    print(code)
+    t_catex.close()
